@@ -21,6 +21,7 @@ python youtube_audio_downloader.py <URL> [<URL> ...] [options]
 | `-o, --output-dir` | Directory to save audio files | `./downloads` |
 | `-f, --format` | Audio format: `mp3`, `m4a`, `opus`, `vorbis`, `wav`, `flac`, `aac` | `mp3` |
 | `-q, --quality` | Bitrate in kbps (e.g. `192`, `320`) or VBR `0-9` | `192` |
+| `--no-check-certificates` | Skip TLS verification (only for trusted MITM proxies) | off |
 
 ### Examples
 

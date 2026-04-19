@@ -15,7 +15,12 @@ except ImportError:
     sys.exit(1)
 
 
-def build_ydl_options(output_dir: Path, audio_format: str, audio_quality: str) -> dict:
+def build_ydl_options(
+    output_dir: Path,
+    audio_format: str,
+    audio_quality: str,
+    no_check_certificates: bool = False,
+) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
     return {
         "format": "bestaudio/best",
@@ -23,6 +28,7 @@ def build_ydl_options(output_dir: Path, audio_format: str, audio_quality: str) -
         "noplaylist": False,
         "quiet": False,
         "no_warnings": False,
+        "nocheckcertificate": no_check_certificates,
         "postprocessors": [
             {
                 "key": "FFmpegExtractAudio",
@@ -33,8 +39,14 @@ def build_ydl_options(output_dir: Path, audio_format: str, audio_quality: str) -
     }
 
 
-def download(urls: list[str], output_dir: Path, audio_format: str, audio_quality: str) -> int:
-    options = build_ydl_options(output_dir, audio_format, audio_quality)
+def download(
+    urls: list[str],
+    output_dir: Path,
+    audio_format: str,
+    audio_quality: str,
+    no_check_certificates: bool = False,
+) -> int:
+    options = build_ydl_options(output_dir, audio_format, audio_quality, no_check_certificates)
     with yt_dlp.YoutubeDL(options) as ydl:
         return ydl.download(urls)
 
@@ -66,12 +78,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="192",
         help="Audio quality in kbps or 0-9 VBR (default: 192)",
     )
+    parser.add_argument(
+        "--no-check-certificates",
+        action="store_true",
+        help="Skip TLS certificate verification (use only behind trusted MITM proxies)",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    return download(args.urls, args.output_dir, args.audio_format, args.audio_quality)
+    return download(
+        args.urls,
+        args.output_dir,
+        args.audio_format,
+        args.audio_quality,
+        args.no_check_certificates,
+    )
 
 
 if __name__ == "__main__":
